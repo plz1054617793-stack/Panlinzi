@@ -526,8 +526,8 @@ if uploaded_file is not None:
             st.write("对比两列数据差异")
             
             # 列选择
-            col1 = st.selectbox("选择列A", df.columns, key=f"col_a_{selected_sheet}")
-            col2 = st.selectbox("选择列B", df.columns, key=f"col_b_{selected_sheet}")
+            col1 = st.selectbox("选择列", df.columns, key=f"col_a_{selected_sheet}")
+            col2 = st.selectbox("选择列", df.columns, key=f"col_b_{selected_sheet}")
             
             # 对比类型选择
             compare_type = st.radio(
