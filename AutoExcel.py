@@ -1,7 +1,6 @@
 import streamlit as st 
 import pandas as pd 
 import numpy as np 
-import matplotlib.pyplot as plt 
 from io import BytesIO
 from openpyxl import load_workbook
 
@@ -31,9 +30,7 @@ st.markdown("""
     .matched-aircraft {background-color: #e6fffb;}
     .only-a-aircraft {background-color: #fff1f0;}
     .only-b-aircraft {background-color: #fff7e6;}
-    /* 调整功能块内部元素间距 */
     .功能块 .stRadio, .功能块 .stTextInput, .功能块 .stSelectbox {margin-bottom: 10px;}
-    /* 单元格选择表格样式 */
     .cell-selection-row {display: flex; width: 100%;}
     .row-selector {flex: 0 0 80px; padding: 5px;}
     .cell-column {flex: 1; padding: 5px; min-width: 120px;}
@@ -319,7 +316,7 @@ if uploaded_file is not None:
             with header_cols[col_idx + 1]:
                 st.write(f"**{col_name}**")
         
-        # 显示当前页的单元格选择表格（修复布局问题）
+        # 显示当前页的单元格选择表格
         for row_idx in range(start_row, end_row):
             # 创建当前行的列布局
             row_cols = st.columns([1] + [2]*min(10, len(df.columns)))
@@ -1068,78 +1065,8 @@ if uploaded_files:
                     st.subheader("详细对比结果")
                     st.dataframe(detail_df, use_container_width=True)
         
-        if len(uploaded_files)>=2:
-            st.subheader("跨文件可视化")
-            viz_cols = st.columns(3)
-            with viz_cols[0]:
-                viz_file1 = st.selectbox("选择文件1", list(file_sheets.keys()), key="viz_file1")
-                viz_sheet1 = st.selectbox("选择工作表1", file_sheets[viz_file1], key="viz_sheet1")
-                viz_df1 = pd.read_excel(
-                    uploaded_files[[f.name for f in uploaded_files].index(viz_file1)],
-                    sheet_name=viz_sheet1,
-                    engine='openpyxl'
-                )
-            with viz_cols[1]:
-                viz_col1 = st.selectbox("选择对比列", [str(col) for col in viz_df1.columns], key="viz_col1")
-                viz_col1_original = viz_df1.columns[viz_df1.columns.astype(str) == viz_col1][0]
-            with viz_cols[2]:
-                viz_type = st.selectbox("图表类型", ["柱状图", "折线图", "饼图"], key="viz_type")
-            
-            if st.button("生成跨文件图表", key="cross_viz_btn"):
-                num_data = []
-                max_data_points = 200
-                
-                for f in uploaded_files[:4]:
-                    first_sheet = file_sheets[f.name][0]
-                    try:
-                        df = pd.read_excel(f, sheet_name=first_sheet, engine='openpyxl')
-                        if viz_col1_original in df.columns:
-                            col_data = df[viz_col1_original]
-                            valid_data = [val for val in col_data.dropna() if pd.api.types.is_numeric_dtype(type(val))]
-                            take_count = min(len(valid_data), max_data_points // len(uploaded_files[:4]))
-                            for val in valid_data[:take_count]:
-                                num_data.append({"文件": f.name, "工作表": first_sheet, "数值": val})
-                                if len(num_data) >= max_data_points:
-                                    break
-                    except Exception as e:
-                        st.warning(f"处理文件 {f.name} 时出错: {str(e)}")
-                        continue
-                
-                if num_data:
-                    fig, ax = plt.subplots(figsize=(8, 5))
-                    data_by_file = {}
-                    for item in num_data:
-                        key = f"{item['文件']}[{item['工作表']}]"
-                        if key not in data_by_file:
-                            data_by_file[key] = []
-                        data_by_file[key].append(item["数值"])
-                    
-                    if viz_type == "柱状图":
-                        x = np.arange(max(len(vals) for vals in data_by_file.values()))
-                        width = 0.8 / len(data_by_file)
-                        for i, (key, vals) in enumerate(data_by_file.items()):
-                            ax.bar(
-                                x + i*width, 
-                                vals + [0]*(max(len(vals) for vals in data_by_file.values())-len(vals)),
-                                width=width, 
-                                label=key
-                            )
-                        ax.set_xticks(x + width*(len(data_by_file)-1)/2)
-                        ax.set_xticklabels([f"数据点{i+1}" for i in range(x.size)])
-                    elif viz_type == "折线图":
-                        for key, vals in data_by_file.items():
-                            ax.plot(range(1, len(vals)+1), vals, marker='o', label=key)
-                        ax.set_xlabel("数据点索引")
-                    elif viz_type == "饼图":
-                        file_sum = {key: sum(vals) for key, vals in data_by_file.items()}
-                        ax.pie(file_sum.values(), labels=file_sum.keys(), autopct='%1.1f%%')
-                        ax.axis('equal')
-                    
-                    ax.set_ylabel("数值")
-                    ax.legend(title="文件", bbox_to_anchor=(1.05, 1), loc='upper left')
-                    plt.tight_layout()
-                    st.pyplot(fig)
-                else:
-                    st.warning(f"未找到可可视化的数值数据（部分文件可能不含 {viz_col1} 列或该列无数值）")
+        # 移除matplotlib相关的可视化功能，解决依赖问题
+        st.info("跨文件可视化功能已暂时移除，以优化部署兼容性")
+        
     except Exception as e:
         st.error(f"处理错误：{str(e)}")
