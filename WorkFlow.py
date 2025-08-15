@@ -5,10 +5,10 @@ import re
 from io import BytesIO
 
 # 设置标题和侧边栏
-st.title("构型差异自动化处理平台")
+st.title("A320新飞机引进机身项目自动化处理平台")
 sidebar = st.sidebar
 sidebar.title("设置")
-sidebar.markdown("**作者：周福来|邢超**")
+sidebar.markdown("**作者：周福来**")
 plane_model = sidebar.selectbox("飞机型号", ["A318", "A319", "A320", "A321"], key="plane_model_select")
 plane_submodel = sidebar.selectbox("飞机子型号", ["A321-201", "None"], key="plane_submodel_select")
 engine_model = sidebar.selectbox("发动机型号", ["CFM56-5", "IAE", "PW1100G", "LEAP-1A"], key="engine_model_select")
