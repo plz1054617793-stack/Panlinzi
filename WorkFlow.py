@@ -5,7 +5,7 @@ import re
 from io import BytesIO
 
 # 设置标题和侧边栏
-st.title("A320新飞机引进机身项目自动化处理平台")
+st.title("A320新飞机机身项目处理平台")
 sidebar = st.sidebar
 sidebar.title("设置")
 sidebar.markdown("**作者：周福来**")
