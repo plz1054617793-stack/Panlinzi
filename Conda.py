@@ -12,7 +12,7 @@ from pywt import wavedec
 
 
 # 设置标题和作者
-st.title("大数据处理平台")
+st.title("DAR处理平台")
 # 创建侧边栏
 sidebar = st.sidebar.radio("设置", ["数据处理", "数据应用"])
 st.sidebar.markdown("作者: 周福来")
